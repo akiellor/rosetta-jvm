@@ -88,6 +88,13 @@ task(rspec, type: JavaExec) {
   args = ['classpath:bin/rspec', 'src/test/ruby']
 }
 
+task('rspec.classpath') << {
+    mkdir("$buildDir/classpaths")
+    def out = new BufferedWriter(new FileWriter("$buildDir/classpaths/rspec"))
+    out.write(rspec.classpath.collect { it.canonicalPath }.join(":"))
+    out.close()
+}
+
 check.dependsOn << 'rspec'
 
 idea.module {
