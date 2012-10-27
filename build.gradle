@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'war'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -7,7 +8,7 @@ targetCompatibility = 1.6
 defaultTasks('check')
 
 configurations {
-  rspec
+  rspec.extendsFrom compile
 }
 
 repositories {
@@ -18,6 +19,12 @@ repositories {
 }
 
 dependencies {
+  compile 'org.eclipse.jetty:jetty-server:8.1.4.v20120524'
+  compile 'org.eclipse.jetty:jetty-servlet:8.1.4.v20120524'
+  compile 'org.eclipse.jetty:jetty-io:8.1.4.v20120524'
+  compile 'org.eclipse.jetty:jetty-util:8.1.4.v20120524'
+  compile 'org.eclipse.jetty:jetty-webapp:8.1.4.v20120524'
+
   compile "org.jruby:jruby-complete:1.6.7.2"
   compile "org.rubygems:gearup:0.0.5"
   compile 'org.rubygems:sprockets:2.4.5'
@@ -26,13 +33,25 @@ dependencies {
   compile 'org.rubygems:execjs:1.4.0'
   compile 'org.rubygems:therubyrhino:2.0.0'
   compile 'org.rubygems:less:2.2.1'
+  compile 'org.rubygems:clamp:0.4.0'
 
   compile 'org.python:jython-standalone:2.5.3'
 
   compile 'org.ioke:ioke-lang:P-0.4.0-p11'
   compile 'org.ioke:ioke-lang-lib:P-0.4.0-p11'
+  compile 'org.ioke:ioke-lang-lib:P-0.4.0-p11'
 
-  rspec 'org.jruby:jruby-complete:1.6.7.2'
+  compile 'com.google.inject:guice:3.0'
+  compile 'com.google.inject.extensions:guice-assistedinject:3.0'
+
+  compile module('org.jruby.rack:jruby-rack:1.1.7') {
+    dependency 'org.jruby:jruby-core:1.6.7.2'
+    dependency 'org.jruby:jruby-stdlib:1.6.7.2'
+    dependency 'com.jcraft:jzlib:1.1.1'
+  }
+
+  compile 'org.javafunk.funk:funk:0.1.15'
+
   rspec 'org.rubygems:rspec:2.10.0'
 }
 
