@@ -35,4 +35,8 @@ public class NeoProjectVisitor implements ProjectVisitor {
         language.accept(visitor);
         project.createRelationshipTo(visitor.getNode(), Relationships.IMPLEMENTED_IN);
     }
+
+    public Node getNode(){
+        return project;
+    }
 }

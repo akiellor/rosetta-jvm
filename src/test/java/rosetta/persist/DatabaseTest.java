@@ -1,7 +1,8 @@
-package rosetta;
+package rosetta.persist;
 
 import org.javafunk.funk.Lazily;
 import org.javafunk.funk.functors.Mapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -12,14 +13,23 @@ import org.neo4j.graphdb.traversal.Evaluators;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 import org.neo4j.kernel.Traversal;
+import rosetta.Relationships;
 import rosetta.domain.Language;
 import rosetta.domain.Project;
-import rosetta.persist.NeoProjectVisitor;
 
 import static org.javafunk.matchbox.Matchers.hasOnlyItemsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 public class DatabaseTest {
+    private Database database;
+    private GraphDatabaseService neo;
+
+    @Before
+    public void setUp() {
+        neo = new GraphDatabaseFactory().newEmbeddedDatabase("./.db");
+        database = new Database(neo);
+    }
+
     @Test
     public void play() {
         GraphDatabaseService database = new GraphDatabaseFactory().newEmbeddedDatabase("./.db");
@@ -63,28 +73,15 @@ public class DatabaseTest {
 
     @Test
     public void shouldPersistDomainObjects() {
-        GraphDatabaseService database = new GraphDatabaseFactory().newEmbeddedDatabase("./.db");
-
-        Project rails = new Project("rails", new Language("ruby"));
-
-        Transaction transaction = database.beginTx();
-
-        NeoProjectVisitor railsVisitor = new NeoProjectVisitor(database);
-        rails.accept(railsVisitor);
-
-        Project django = new Project("django", new Language("python"));
-
-        NeoProjectVisitor djangoVisitor = new NeoProjectVisitor(database);
-        django.accept(djangoVisitor);
-
-        transaction.success();
+        database.save(new Project("rails", new Language("ruby")));
+        database.save(new Project("django", new Language("python")));
 
         TraversalDescription td = Traversal.description()
                 .evaluator(Evaluators.all())
                 .evaluator(Evaluators.includeWhereLastRelationshipTypeIs(Relationships.IMPLEMENTED_IN))
                 .depthFirst();
 
-        Traverser traverse = td.traverse(database.getNodeById(0));
+        Traverser traverse = td.traverse(neo.getNodeById(0));
 
         Iterable<String> languages = Lazily.map(traverse, new Mapper<Path, String>() {
             @Override public String map(Path input) {
