@@ -55,6 +55,9 @@ dependencies {
   compile 'org.javafunk.funk:funk:0.1.15'
 
   rspec 'org.rubygems:rspec:2.10.0'
+
+  testCompile 'org.javafunk.matchbox:matchbox:0.1.2'
+  testCompile 'junit:junit:4.10'
 }
 
 sourceSets {
